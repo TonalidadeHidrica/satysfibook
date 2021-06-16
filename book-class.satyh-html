@@ -1,12 +1,13 @@
 % -*- coding: utf-8 -*-
-@require: pervasives
-@require: gr
+% @require: pervasives
+% @require: gr
 @require: list
 @require: option
-@require: math
+% @require: math
 @require: color
-@require: vdecoset
-@require: footnote-scheme
+% @require: vdecoset
+% @require: footnote-scheme
+@import: fake-primitives
 
 
 type bib-in-proceedings =
@@ -57,7 +58,7 @@ type bib-item =
 
 module Book : sig
 
-  val document : 'a -> block-text -> document
+  val document : 'a -> block-text -> string
     constraint 'b :: (|
       title : inline-text;
       author : inline-text;
@@ -81,10 +82,10 @@ module Book : sig
   val font-latin-sans   : string * float * float
   val font-cjk-mincho   : string * float * float
   val font-cjk-gothic   : string * float * float
-  val set-latin-font : (string * float * float) -> context -> context
-  val set-cjk-font   : (string * float * float) -> context -> context
-  val get-latin-font-size : context -> length
-  val get-cjk-font-size : context -> length
+  val set-latin-font : (string * float * float) -> text-info -> text-info
+  val set-cjk-font   : (string * float * float) -> text-info -> text-info
+  val get-latin-font-size : text-info -> length
+  val get-cjk-font-size : text-info -> length
   direct \ref : [string] inline-cmd
   direct \ref-page : [string] inline-cmd
   direct \ref-chapter : [string] inline-cmd

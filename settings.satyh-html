@@ -1,15 +1,14 @@
 % -*- coding: utf-8 -*-
-@require: deco
-@require: code
+% @require: deco
+% @require: code
 @require: color
-@require: itemize
-@require: hdecoset
-@require: table
-@require: bnf
-@require: proof
+% @require: itemize
+% @require: hdecoset
+% @require: table
+% @require: bnf
+% @require: proof
 @import: term
 @import: book-class
-
 
 % ---- constants ----
 

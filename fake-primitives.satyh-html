@@ -1,0 +1,316 @@
+@require: base/string
+
+type path-t = unit
+let graphics- = ()
+let path- = ()
+let path-pre- = ()
+let id x = x
+
+let register-destination _ _ = ()
+let register-link-to-uri _ _ _ _ _ _ = ()
+let register-link-to-location _ _ _ _ _ _ = ()
+let inline-frame-breakable _ _ = id
+let (++) = (^)
+let (+++) = (^)
+let hook-page-break _ = ` `
+let set-font _ _ = id
+let get-font-size _ = 1cm
+let get-initial-context _ _ = get-initial-text-info ()
+let-inline \math _ = {}
+let set-font-size _ = id
+let set-leading _ = id
+let set-dominant-wide-script _ = id
+let set-language _ _ = id
+let set-dominant-narrow-script _ = id
+let set-math-font _ = id
+let set-hyphen-penalty _ = id
+let set-space-ratio _ _ _ = id
+let set-paragraph-margin _ _ = id
+let set-text-color _ = id
+let set-every-word-break _ _ = id
+let set-manual-rising _ = id
+let get-natural-metrics _ = (1cm, 1cm, 1cm)
+let get-natural-length _ = 1cm
+let get-natural-width _ = 1cm
+let get-text-width _ = 1cm
+let inline-skip _ = ` `
+let block-nil = ` `
+let inline-nil = ` `
+let inline-fil = ` `
+let line-break _ _ _ _ = ` `
+let block-skip _ = ` `
+let block-frame-breakable _ _ _ _ = ` `
+let read-inline = stringify-inline
+let read-block = stringify-block
+let clear-page = ` `
+let discretionary _ _ _ _ = ` `
+type 'a 'b 'c cell = NormalCell of 'a | EmptyCell of 'b | MultiCell of 'c
+let tabular _ _ = ` `
+let stroke _ _ _ = graphics-
+let line-stack-bottom = String.concat
+let inline-graphics _ _ _ _ = ` `
+let embed-block-top _ _ _ = ` `
+let page-break _ _ _ _ = ` `
+let form-paragraph = line-break true true
+let start-path _ = path-pre-
+let bezier-to _ _ _ = id
+let line-to _ = id
+let close-with-line = id
+let fill _ _  = graphics-
+let shift-path _ = id
+let math-paren _ _ = id
+let math-paren-with-middle _ _ _ x = match x with x :: _ -> x
+let text-in-math _ _ = ${ }
+let embed-math _ = id
+
+% pervasives
+type point = length * length
+type paren = length -> length -> length -> length -> color -> string * (length -> length)
+let increment r = r <- !r + 1
+let math-pi = 3.1415926536
+let length-max len1 len2 = if len1 <' len2 then len2 else len1
+let length-min len1 len2 = if len1 <' len2 then len1 else len2
+let length-abs len = if len <' 0pt then 0pt -' len else len
+
+module VDecoSet : sig
+
+  val empty : deco-set
+  % val simple-frame-stroke : length -> color -> deco-set
+  % val simple-frame : length -> color -> color -> deco-set
+  % val paper : deco-set
+  % val quote-round : length -> length -> color -> deco-set
+
+end = struct
+  let empty =
+    let deco _ _ _ _ = [] in
+      (deco, deco, deco, deco)
+end
+
+module Geom : sig
+  val atan2-point : point -> point -> float
+  val div-perp : point -> point -> float -> length -> point
+end = struct
+
+  let atan2-point (x1, y1) (x2, y2) =
+    atan2 ((y2 -' y1) /' 1pt) ((x2 -' x1) /' 1pt)
+
+
+  let div-perp (x1, y1) (x2, y2) t len =
+    let cx = x1 *' (1. -. t) +' x2 *' t in
+    let cy = y1 *' (1. -. t) +' y2 *' t in
+    let theta = atan2 ((y2 -' y1) /' 1pt) ((x2 -' x1) /' 1pt) +. math-pi /. 2. in
+      (cx +' len *' (cos theta), cy +' len *' (sin theta))
+
+end
+
+module Gr : sig
+  val line : point -> point -> path-t
+end = struct
+  let line _ _ = path-
+end
+
+module FootnoteScheme : sig
+
+  % val initialize : unit -> unit
+  val start-page : unit -> unit
+  val main : text-info -> (int -> string) -> (int -> string) -> string
+  % val main-no-number : context -> (unit -> inline-boxes) -> (unit -> block-boxes) -> inline-boxes
+
+end = struct
+  let start-page = id
+  let main _ _ _ = ` `
+end
+
+module Math : sig
+  val join : math -> math list -> math
+  val half-length : length -> length -> length -> length -> length
+  % val bracket-left : paren
+  % val bracket-right : paren
+  direct \paren : [math] math-cmd
+  direct \angle-bracket : [math] math-cmd
+  direct \sqbracket : [math] math-cmd
+  direct \brace : [math] math-cmd
+  val paren-left : paren
+  val paren-right : paren
+  val sqbracket-left : paren
+  val sqbracket-right : paren
+  val angle-left : length -> paren
+  val angle-right : length -> paren
+  val brace-left : paren
+  val brace-right : paren
+  val empty-paren : paren
+  val slash-middle : paren
+  direct \mathbf : [math] math-cmd
+  direct \mathrm : [math] math-cmd
+
+  direct \alpha   : [] math-cmd
+  direct \beta    : [] math-cmd
+  direct \gamma   : [] math-cmd
+  direct \delta   : [] math-cmd
+  direct \epsilon : [] math-cmd
+  direct \zeta    : [] math-cmd
+  direct \eta     : [] math-cmd
+  direct \theta   : [] math-cmd
+  direct \iota    : [] math-cmd
+  direct \kappa   : [] math-cmd
+  direct \lambda  : [] math-cmd
+  direct \mu      : [] math-cmd
+  direct \nu      : [] math-cmd
+  direct \xi      : [] math-cmd
+  direct \omicron : [] math-cmd
+  direct \pi      : [] math-cmd
+  direct \rho     : [] math-cmd
+  direct \sigma   : [] math-cmd
+  direct \tau     : [] math-cmd
+  direct \upsilon : [] math-cmd
+  direct \phi     : [] math-cmd
+  direct \chi     : [] math-cmd
+  direct \psi     : [] math-cmd
+  direct \omega   : [] math-cmd
+
+  direct \Alpha   : [] math-cmd
+  direct \Beta    : [] math-cmd
+  direct \Gamma   : [] math-cmd
+  direct \Delta   : [] math-cmd
+  direct \Epsilon : [] math-cmd
+  direct \Zeta    : [] math-cmd
+  direct \Eta     : [] math-cmd
+  direct \Theta   : [] math-cmd
+  direct \Iota    : [] math-cmd
+  direct \Kappa   : [] math-cmd
+  direct \Lambda  : [] math-cmd
+  direct \Mu      : [] math-cmd
+  direct \Nu      : [] math-cmd
+  direct \Xi      : [] math-cmd
+  direct \Omicron : [] math-cmd
+  direct \Pi      : [] math-cmd
+  direct \Rho     : [] math-cmd
+  direct \Sigma   : [] math-cmd
+  direct \Tau     : [] math-cmd
+  direct \Upsilon : [] math-cmd
+  direct \Phi     : [] math-cmd
+  direct \Chi     : [] math-cmd
+  direct \Psi     : [] math-cmd
+  direct \Omega   : [] math-cmd
+end = struct
+  let join msep mlst =
+    match
+      mlst |> List.fold-left (fun maccopt m -> (
+        match maccopt with
+        | None       -> Some(m)
+        | Some(macc) -> Some(${#macc #msep #m})
+      )) None
+    with
+    | None       -> ${}
+    | Some(macc) -> macc
+
+  let half-length _ _ _ _ = 1cm
+
+  let paren-left _ _ _ _ _ = (` `, id)
+  let paren-right _ _ _ _ _ = (` `, id)
+  let sqbracket-left _ _ _ _ _ = (` `, id)
+  let sqbracket-right _ _ _ _ _ = (` `, id)
+  let slash-middle _ _ _ _ _ = (` `, id)
+  let angle-left _ _ _ _ _ _ = (` `, id)
+  let angle-right _ _ _ _ _ _ = (` `, id)
+  let brace-left _ _ _ _ _ = (` `, id)
+  let brace-right _ _ _ _ _ = (` `, id)
+  let empty-paren _ _ _ _ _ = (` `, id)
+
+  let-math \paren =
+    math-paren paren-left paren-right
+  let-math \angle-bracket =
+    math-paren (angle-left 0.5pt) (angle-right 0.5pt)
+  let-math \sqbracket =
+    math-paren sqbracket-left sqbracket-right
+  let-math \brace =
+    math-paren brace-left brace-right
+
+  let-math \mathbf x = x
+  let-math \mathrm x = x
+
+  let single cp = string-unexplode [cp]
+
+  let greek-lowercase cp cpb =
+    let s = single cp in
+    let sb = single cpb in
+      math-variant-char MathOrd (|
+        italic        = s;
+        bold-italic   = sb;
+        roman         = s;
+        bold-roman    = sb;
+        script        = s;
+        bold-script   = sb;
+        fraktur       = s;
+        bold-fraktur  = sb;
+        double-struck = s;
+      |)
+
+
+  let greek-uppercase cp cpb cpr cprb =
+    let s = single cp in
+    let sb = single cpb in
+    let sr = single cpr in
+    let srb = single cprb in
+      math-variant-char MathOrd (|
+        italic        = s;
+        bold-italic   = sb;
+        roman         = sr;
+        bold-roman    = srb;
+        script        = s;
+        bold-script   = sb;
+        fraktur       = s;
+        bold-fraktur  = sb;
+        double-struck = s;
+      |)
+
+  let-math \alpha    = greek-lowercase 0x1D6FC 0x1D736
+  let-math \beta     = greek-lowercase 0x1D6FD 0x1D737
+  let-math \gamma    = greek-lowercase 0x1D6FE 0x1D738
+  let-math \delta    = greek-lowercase 0x1D6FF 0x1D739
+  let-math \epsilon  = greek-lowercase 0x1D700 0x1D73A
+  let-math \zeta     = greek-lowercase 0x1D701 0x1D73B
+  let-math \eta      = greek-lowercase 0x1D702 0x1D73C
+  let-math \theta    = greek-lowercase 0x1D703 0x1D73D
+  let-math \iota     = greek-lowercase 0x1D704 0x1D73E
+  let-math \kappa    = greek-lowercase 0x1D705 0x1D73F
+  let-math \lambda   = greek-lowercase 0x1D706 0x1D740
+  let-math \mu       = greek-lowercase 0x1D707 0x1D741
+  let-math \nu       = greek-lowercase 0x1D708 0x1D742
+  let-math \xi       = greek-lowercase 0x1D709 0x1D743
+  let-math \omicron  = greek-lowercase 0x1D70A 0x1D744
+  let-math \pi       = greek-lowercase 0x1D70B 0x1D745
+  let-math \rho      = greek-lowercase 0x1D70C 0x1D746
+  let-math \sigma    = greek-lowercase 0x1D70E 0x1D748
+  let-math \tau      = greek-lowercase 0x1D70F 0x1D749
+  let-math \upsilon  = greek-lowercase 0x1D710 0x1D74A
+  let-math \phi      = greek-lowercase 0x1D711 0x1D74B
+  let-math \chi      = greek-lowercase 0x1D712 0x1D74C
+  let-math \psi      = greek-lowercase 0x1D713 0x1D74D
+  let-math \omega    = greek-lowercase 0x1D714 0x1D74E
+
+  let-math \Alpha    = greek-uppercase 0x1D6E2 0x1D71C 0x0391 0x1D6A8
+  let-math \Beta     = greek-uppercase 0x1D6E3 0x1D71D 0x0392 0x1D6A9
+  let-math \Gamma    = greek-uppercase 0x1D6E4 0x1D71E 0x0393 0x1D6AA
+  let-math \Delta    = greek-uppercase 0x1D6E5 0x1D71F 0x0394 0x1D6AB
+  let-math \Epsilon  = greek-uppercase 0x1D6E6 0x1D720 0x0395 0x1D6AC
+  let-math \Zeta     = greek-uppercase 0x1D6E7 0x1D721 0x0396 0x1D6AD
+  let-math \Eta      = greek-uppercase 0x1D6E8 0x1D722 0x0397 0x1D6AE
+  let-math \Theta    = greek-uppercase 0x1D6E9 0x1D723 0x0398 0x1D6AF
+  let-math \Iota     = greek-uppercase 0x1D6EA 0x1D724 0x0399 0x1D6B0
+  let-math \Kappa    = greek-uppercase 0x1D6EB 0x1D725 0x039A 0x1D6B1
+  let-math \Lambda   = greek-uppercase 0x1D6EC 0x1D726 0x039B 0x1D6B2
+  let-math \Mu       = greek-uppercase 0x1D6ED 0x1D727 0x039C 0x1D6B3
+  let-math \Nu       = greek-uppercase 0x1D6EE 0x1D728 0x039D 0x1D6B4
+  let-math \Xi       = greek-uppercase 0x1D6EF 0x1D729 0x039E 0x1D6B5
+  let-math \Omicron  = greek-uppercase 0x1D6F0 0x1D72A 0x039F 0x1D6B6
+  let-math \Pi       = greek-uppercase 0x1D6F1 0x1D72B 0x03A0 0x1D6B7
+  let-math \Rho      = greek-uppercase 0x1D6F2 0x1D72C 0x03A1 0x1D6B8
+  let-math \Sigma    = greek-uppercase 0x1D6F4 0x1D72E 0x03A3 0x1D6BA
+  let-math \Tau      = greek-uppercase 0x1D6F5 0x1D72F 0x03A4 0x1D6BB
+  let-math \Upsilon  = greek-uppercase 0x1D6F6 0x1D730 0x03A5 0x1D6BC
+  let-math \Phi      = greek-uppercase 0x1D6F7 0x1D731 0x03A6 0x1D6BD
+  let-math \Chi      = greek-uppercase 0x1D6F8 0x1D732 0x03A7 0x1D6BE
+  let-math \Psi      = greek-uppercase 0x1D6F9 0x1D733 0x03A8 0x1D6BF
+  let-math \Omega    = greek-uppercase 0x1D6FA 0x1D734 0x03A9 0x1D6C0
+end
