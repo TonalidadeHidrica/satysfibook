@@ -1,0 +1,123 @@
+@import: settings
+
+let programming = '<
+  +p {
+    As already mentioned, \SATySFi; is a markup language for typesetting
+    that features a so-called functional interface.
+    To be more precise, it is a DSL (Domain-Specific Language)
+    that comes with a bunch of language features for typesetting
+    on the top of call-by-value functional language.
+    As a programming language, \SATySFi; adopts a so similar system to that of OCaml
+    that it is sufficient for understanding the foundation of this language
+    % TODO: Replace with English references
+    to refer to textbooks about OCaml like
+    \cite[`Igarashi-OCaml`]; and \cite[`Asai-OCaml`];,
+    or about the basic theory of computational languages or type systems like
+    \cite[`Igarashi-Program`]; and \cite[`TaPL`];.
+    Having said that,there is no need to take a roundabout way via other languages like OCaml
+    so as to learn how to write programs in \SATySFi;,
+    and probably not all of you are enthusiastic about acquiring the basis of functional programming,
+    so we will just give a brief introduction on \SATySFi; as a programming language.
+    Also, later in \ref-subsection(`diff-from-ocaml`);, we will add further rough explanation
+    (for those who are fluent in programming in OCaml as well)
+    on of the difference between OCaml and \SATySFi;
+    due to the disagreement on the sense of purpose and beauty.
+  }
+  +subsection{Expressions and values}<
+    +p{
+      Since \SATySFi; does not have interactive toplevel,
+      we will check out the computation result of programs on PDF outputs.
+      First of all, take a look at the following snippet:
+
+      \d-code(```
+        @require: stdjareport
+
+        let-inline \show-int n = embed-string (arabic n)
+        let-inline \show-float x = embed-string (show-float x)
+        let-inline \show-string s = embed-string s
+        in
+
+        document (|
+          title = {Programming in \SATySFi;};
+          author = {John Smath};
+        |) '<
+          +p{ Answer: \show-int(40 + 2); }
+        >
+      ```);%
+
+      There is a series of three statements starting with \codem{let-inline},
+      which are unfamiliar but akin to how inline commands were defined in the previous section.
+      These are indeed definitions of inline commands named
+      \codem{\\show-int}, \codem{\\show-float}, and \codem{\\show-string}.
+      You will later see how to read this definition\;
+      for now, take them as the spells defining
+      "the commands that output a given \meta-or{|integer|decimal|string|} to the page
+      (in decimal notation in case of numerals)."
+      Notice the use of \codem{\\show-int}, that is:
+
+      \d-code(```
+         +p{ Answer: \show-int(40 + 2); }
+      ```);%
+
+      There is a mysterious expression in the rounded parenthesis: \codem{40 + 2}.
+      Feeding this code to \SATySFi; processor, the paragraph turns into an output like this:
+
+      \d-block(open Sample in '<
+        +p{ Answer: \show-int(40 + 2); }
+      >);%
+
+      As you can see, the sum of ${40} and ${2} is computed.
+      Simply put, such "computation process" is an essential part of tasks of programs,
+      and describing "computation process" as a program is called programming.
+      Descriptions like \codem{40 + 2} are often called
+      an \dfn{expression} or a \dfn{term}\;
+      a program is constructed from expressions according to appropriate syntax\footnote{
+        If you are familiar with computational languages like C and Python
+        which are strongly based on "procedural" viewpoints,
+        you may doubt that "don't expressions rather construct statements,
+        which in turn build up programs?"
+        However, \SATySFi; does not have a concept of statements\d---;
+        actually, the special cases of expressions correspond to
+        such statements provided by "procedural" languages.
+        This is a common property to many so-called functional languages, including OCaml.
+      }.
+    }
+    +p{
+      Just as \codem{40 + 2} "evaluated to" \codem{42},
+      expressions in generally "transforms" into "expressions that do not evaluate anymore."
+      The process of "transformation" is called
+      an \dfn{evaluation} or sometimes a \dfn{reduction},
+      and "an expression that do not evaluate anymore" is called 
+      a \dfn{syntactic value} or simply a \dfn{value}.
+      What programs do is to evaluate expressions and find values.
+    }
+    +p{
+      Let us do a bit more complex calculation.
+
+      \d-code-and-block(```
+        +p{ Answer: \show-int(1 + 2 * 3 - 4); }
+      ```)(open Sample in '<
+        +p{ Answer: \show-int(1 + 2 * 3 - 4); }
+      >);%
+
+      \codem{\*} is a binary operation for multiplications.
+      Just as if we write ${1 + 2 \times 3 - 4}
+      it is normally treated as ${\paren{1 + \paren{2 \times 3}} - 4},
+      in \SATySFi; languages, the associativities of binary operators have precedence rules too.
+      Again, just as the mathematical expressions in our daily use,
+      we may use parenthesis to indicate the priorities:
+
+      \d-code-and-block(```
+        +p{ Answer: \show-int((1 + 2) * 3 - 4); }
+      ```)(open Sample in '<
+        +p{ Answer: \show-int((1 + 2) * 3 - 4); }
+      >);%
+
+      Note that integers in \SATySFi; are a 63-bit signed integer in 64-bit environments
+      or a 31-bit signed integer in 32-bit environments\footnote{
+        This behavior is due to the specification of \code(`int`); type in OCaml,
+        which is used for the processing system of \SATySFi;.
+      }.
+    }
+  >
+>
